@@ -21,3 +21,8 @@
     name: k3s
     state: restarted
     enabled: true
+
+- name: Get node information 
+  ansible.builtin.command: 
+    cmd: "k3s kubectl get node"
+  register: kubectl_node
