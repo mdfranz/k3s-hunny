@@ -1,0 +1,3 @@
+install_k3s: True
+install_acorn: False
+install_falco: False

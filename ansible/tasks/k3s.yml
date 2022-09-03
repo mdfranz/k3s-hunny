@@ -1,0 +1,14 @@
+- name: Populate service facts
+  ansible.builtin.service_facts:
+
+- name: Get K3S install script
+  ansible.builtin.get_url:
+    url: https://get.k3s.io/
+    dest: /tmp/k3s-install.sh
+    mode: '0755'
+
+- name: Print service facts
+  ansible.builtin.debug:
+    var: ansible_facts.services
+
+
