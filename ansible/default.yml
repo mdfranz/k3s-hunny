@@ -7,4 +7,3 @@
   tasks:
     - import_tasks: tasks/k3s.yml
     - import_tasks: tasks/acorn.yml
-

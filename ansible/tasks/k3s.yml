@@ -11,30 +11,32 @@
   ansible.builtin.debug:
     var: ansible_facts.services
 
-- name: Run k3s install script
-  ansible.builtin.command: 
-    cmd: /tmp/k3s-install.sh
-    creates: /usr/local/bin/k3s
-  when: install_k3s| bool
-
-- name: Restart ks3
-  ansible.builtin.service: 
-    name: k3s
-    state: restarted
-    enabled: true
+- name: Install K3s
+  block: 
+    - name: Run k3s install script
+      ansible.builtin.command: 
+        cmd: /tmp/k3s-install.sh
+        creates: /usr/local/bin/k3s
+    - name: Restart ks3
+      ansible.builtin.service: 
+        name: k3s
+        state: restarted
+        enabled: true
+    - name: Sleep a bit
+      ansible.builtin.pause:
+        seconds: 15
+    - name: Get node information 
+      ansible.builtin.command: 
+        cmd: "kubectl get node"
+      register: kubectl_node
   when: install_k3s| bool
 
 - name: Create a directory if it does not exist
   ansible.builtin.file:
-    path: "{{ ansible_env.HOME }}/.kube/"
+    path: "{{ user }}/.kube/"
     state: directory
 
 - name: Create kube config 
   ansible.builtin.copy:
     src: /etc/rancher/k3s/k3s.yaml
-    dst: "{{ ansible_env.HOME }}/.kube/config"
-
-- name: Get node information 
-  ansible.builtin.command: 
-    cmd: "kubectl get node"
-  register: kubectl_node
+    dest: "{{ user }}/.kube/config"

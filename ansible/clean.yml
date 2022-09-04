@@ -1,0 +1,11 @@
+---
+- hosts: all
+  vars_files:
+    - vars.yml
+  become: yes
+  gather_facts: yes
+  tasks:
+
+    - name: Run k3s install script
+      ansible.builtin.command: 
+        cmd: k3s-uninstall.sh
