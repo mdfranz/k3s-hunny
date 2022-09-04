@@ -15,14 +15,26 @@
   ansible.builtin.command: 
     cmd: /tmp/k3s-install.sh
     creates: /usr/local/bin/k3s
+  when: install_k3s| bool
 
 - name: Restart ks3
   ansible.builtin.service: 
     name: k3s
     state: restarted
     enabled: true
+  when: install_k3s| bool
+
+- name: Create a directory if it does not exist
+  ansible.builtin.file:
+    path: "{{ ansible_env.HOME }}/.kube/"
+    state: directory
+
+- name: Create kube config 
+  ansible.builtin.copy:
+    src: /etc/rancher/k3s/k3s.yaml
+    dst: "{{ ansible_env.HOME }}/.kube/config"
 
 - name: Get node information 
   ansible.builtin.command: 
-    cmd: "k3s kubectl get node"
+    cmd: "kubectl get node"
   register: kubectl_node
