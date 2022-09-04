@@ -1,25 +1,21 @@
-- name: Populate service facts
-  ansible.builtin.service_facts:
-
 - name: Download Acorn install script
   ansible.builtin.get_url:
     url: https://get.acorn.io 
     dest: /tmp/acorn-install.sh
     mode: '0755'
 
-- name: Run Acorn install script
-  ansible.builtin.command: 
-    cmd: /tmp/acorn-install.sh
-    creates: /usr/local/bin/acorn
-  when: install_acorn| bool 
-
-- name: Install Acorn in K3S cluster
-  ansible.builtin.command: 
-    cmd: "acorn install --kubeconfig /etc/rancher/k3s/k3s.yaml"
-  when: install_acorn| bool 
-
-
-- name: Check Acorn cluster
-  ansible.builtin.command: 
-    cmd: "acorn check --kubeconfig /etc/rancher/k3s/k3s.yaml"
+- name: Install Acorn PaaS
+  block:
+    - name: Run Acorn install script
+      ansible.builtin.command: 
+        cmd: /tmp/acorn-install.sh
+        creates: /usr/local/bin/acorn
+      when: install_acorn| bool 
+      become: no
+    - name: Install Acorn in K3S cluster
+      ansible.builtin.command: 
+        cmd: "acorn install"
+    - name: Check Acorn cluster
+      ansible.builtin.command: 
+        cmd: "acorn check"
   when: install_acorn| bool 
